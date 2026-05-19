@@ -4,12 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chaca's 20th | Golden Elegance</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://unpkg.com/split-type"></script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Montserrat:wght@300;400;500&family=Great+Vibes&display=swap" rel="stylesheet">
     <style>
         :root {
             --gold: #D4B483;
@@ -22,180 +17,162 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
 
-        body { 
-            background-color: var(--bg-dark); 
-            color: var(--white); 
-            font-family: 'Montserrat', sans-serif; 
-            overflow-x: hidden; 
-            opacity: 0; /* Pre-loading opacity */
-            transition: opacity 1s ease-in-out;
-        }
-        body.loaded { opacity: 1; }
+        body { background-color: var(--bg-dark); color: var(--white); font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+        h1, h2, h3, .serif { font-family: 'Cormorant Garamond', serif; font-weight: 400; }
+        .cursive { font-family: 'Great Vibes', cursive; }
 
-        h1, h2, h3, .serif { font-family: 'Bodoni Moda', serif; font-weight: 400; }
-        
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
         ::-webkit-scrollbar-thumb { background: var(--dark-gold); border-radius: 10px; }
 
-        /* Cinematic Loading Screen */
+        /* Loading Screen */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
             background: radial-gradient(circle, #1a1a1a 0%, #000000 100%);
             z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 1s ease-in-out, visibility 1s;
+            transition: opacity 1.5s ease-in-out, visibility 1.5s;
         }
+        
         .loader-content { text-align: center; }
         .loader-title {
-            font-size: 3rem; color: var(--gold); letter-spacing: 10px; margin-bottom: 40px; text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(212, 180, 131, 0.4);
-            overflow: hidden; /* For split text */
+            font-size: 2.5rem; color: var(--gold); letter-spacing: 5px; margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(212, 180, 131, 0.5); animation: pulseGlow 3s infinite alternate;
         }
+        
         .open-btn {
-            background: transparent; color: var(--gold); border: 1px solid var(--gold); padding: 18px 50px;
-            font-family: 'Montserrat', sans-serif; font-size: 1.1rem; letter-spacing: 5px; cursor: pointer; text-transform: uppercase;
-            transition: all 0.5s ease; position: relative; overflow: hidden;
+            background: transparent; color: var(--gold); border: 1px solid var(--gold); padding: 15px 40px;
+            font-family: 'Montserrat', sans-serif; font-size: 1rem; letter-spacing: 3px; cursor: pointer; text-transform: uppercase;
+            transition: all 0.5s ease;
         }
-        .open-btn:hover { color: #000; box-shadow: 0 0 40px rgba(212, 180, 131, 0.9); }
-        .open-btn::after {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
-            transform: rotate(30deg); animation: shimmer 3s infinite;
-        }
-        @keyframes shimmer {
-            0% { transform: translateX(-150%) rotate(30deg); }
-            100% { transform: translateX(150%) rotate(30deg); }
-        }
+        .open-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 30px rgba(212, 180, 131, 0.8); }
 
-        /* Particles on Mouse Move */
-        #particles-mouse { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
-        .p-dot { position: absolute; background: var(--gold); border-radius: 50%; opacity: 0; }
+        @keyframes pulseGlow {
+            0% { opacity: 0.7; text-shadow: 0 0 10px rgba(212, 180, 131, 0.3); }
+            100% { opacity: 1; text-shadow: 0 0 30px rgba(212, 180, 131, 0.8); }
+        }
 
         /* Main Content Wrapper */
-        #main-content { opacity: 0; visibility: hidden; }
+        #main-content { opacity: 0; visibility: hidden; transition: opacity 2s ease-in; }
 
-        /* Common Elements */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(212, 180, 131, 0.15); border-radius: 20px; padding: 50px; box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(212, 180, 131, 0.2); border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
-        .btn-gold { 
-            display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, var(--gold) 0%, var(--dark-gold) 100%); 
-            color: #000; text-decoration: none; font-weight: 600; letter-spacing: 3px; border-radius: 40px; 
-            transition: all 0.4s ease; text-transform: uppercase; font-size: 0.9rem; cursor: pointer; border: none; 
-            box-shadow: 0 5px 20px rgba(212, 180, 131, 0.3);
-        }
-        .btn-gold:hover { background: var(--white); box-shadow: 0 0 30px rgba(212, 180, 131, 0.7); }
 
-        /* --- SECTION STYLES --- */
+        .reveal { opacity: 0; transform: translateY(50px); transition: all 1.2s cubic-bezier(0.5, 0, 0, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
 
         /* HERO SECTION */
         #hero { height: 100vh; position: relative; display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden; }
         .hero-bg {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            /* Ganti ke gambar online biar langsung muncul elegan */
             background-image: url('https://images.unsplash.com/photo-1543722530-d2c3201371e7?q=80&w=2074&auto=format&fit=crop');
-            background-size: cover; background-position: center; opacity: 0.6;
-            transform: scale(1.1); /* for parallax start */
+            background-size: cover; background-position: center; opacity: 0.5;
+            animation: slowZoom 20s infinite alternate linear;
         }
-        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(5,5,5,0.1) 0%, rgba(5,5,5,0.95) 100%); }
+        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(5,5,5,0.2) 0%, rgba(5,5,5,0.9) 100%); }
         .hero-content { position: relative; z-index: 2; padding: 20px; }
-        .hero-subtitle { font-size: 1.1rem; letter-spacing: 10px; color: var(--gold); text-transform: uppercase; margin-bottom: 25px; opacity: 0; }
-        .hero-title { font-size: 6rem; font-style: italic; color: var(--white); margin-bottom: 10px; line-height: 1; text-shadow: 0 10px 20px rgba(0,0,0,0.6); opacity: 0;}
-        .hero-date { font-size: 1.4rem; letter-spacing: 5px; color: var(--cream); margin-top: 40px; font-weight: 300; opacity: 0; }
+        .hero-subtitle { font-size: 1rem; letter-spacing: 8px; color: var(--gold); text-transform: uppercase; margin-bottom: 20px; }
+        .hero-title { font-size: 5rem; font-style: italic; color: var(--white); margin-bottom: 10px; line-height: 1; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .hero-date { font-size: 1.2rem; letter-spacing: 4px; color: var(--cream); margin-top: 30px; font-weight: 300; }
         
+        @keyframes slowZoom { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+
         /* LETTER SECTION */
         #letter {
-            padding: 150px 20px; text-align: center; position: relative;
+            padding: 120px 20px; text-align: center; position: relative;
             background: url('https://images.unsplash.com/photo-1578306899478-43d99d14660a?q=80&w=2070&auto=format&fit=crop') center/cover fixed;
         }
-        #letter::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(10, 10, 10, 0.92); backdrop-filter: blur(8px); }
-        .letter-container { max-width: 900px; margin: 0 auto; position: relative; z-index: 2; opacity: 0; transform: translateY(50px); }
-        .letter-text { font-size: 2.2rem; line-height: 1.7; color: var(--cream); margin-bottom: 40px; font-style: italic; font-weight: 300; }
-        .signature { font-size: 4rem; color: var(--gold); text-shadow: 0 0 15px rgba(212, 180, 131, 0.4); }
+        #letter::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(5px); }
+        .letter-container { max-width: 800px; margin: 0 auto; position: relative; z-index: 2; }
+        .letter-text { font-size: 2rem; line-height: 1.6; color: var(--cream); margin-bottom: 30px; font-style: italic; }
+        .signature { font-size: 3.5rem; color: var(--gold); text-shadow: 0 0 10px rgba(212, 180, 131, 0.3); }
 
         /* COUNTDOWN SECTION */
-        #countdown-section { padding: 100px 20px; background: var(--bg-dark); text-align: center; }
-        .countdown-wrapper { display: flex; justify-content: center; gap: 40px; max-width: 700px; margin: 0 auto; opacity: 0; transform: translateY(50px); }
-        .time-box { display: flex; flex-direction: column; align-items: center; width: 120px; padding: 25px 0; border-top: 2px solid var(--gold); border-bottom: 2px solid var(--gold); position: relative; }
-        .time-box::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(212,180,131,0.1) 0%, rgba(212,180,131,0) 100%); }
-        .time-num { font-size: 3.5rem; color: var(--gold); font-weight: 500; font-family: 'Bodoni Moda', serif; }
-        .time-label { font-size: 0.9rem; letter-spacing: 3px; text-transform: uppercase; color: var(--beige); margin-top: 15px; font-weight: 400; }
+        #countdown-section { padding: 80px 20px; background: var(--bg-dark); text-align: center; }
+        .countdown-wrapper { display: flex; justify-content: center; gap: 30px; max-width: 600px; margin: 0 auto; }
+        .time-box { display: flex; flex-direction: column; align-items: center; width: 100px; padding: 20px 0; border-top: 1px solid var(--gold); border-bottom: 1px solid var(--gold); }
+        .time-num { font-size: 3rem; font-family: 'Cormorant Garamond', serif; color: var(--gold); }
+        .time-label { font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: var(--beige); margin-top: 10px;}
 
-        /* MAGIC SECTION WITH CHIBI */
-        #magic-wishes { padding: 120px 20px; background: linear-gradient(180deg, var(--bg-dark) 0%, #1a1611 100%); text-align: center; position: relative; overflow: hidden; }
-        .magic-container { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; opacity: 0; transform: translateY(50px); }
+        /* MAGIC SECTION DENGAN CHIBI */
+        #magic-wishes { padding: 100px 20px; background: linear-gradient(180deg, var(--bg-dark) 0%, #1a1611 100%); text-align: center; position: relative; overflow: hidden; }
+        .magic-container { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
         
         /* Teknik blend-mode biar background hitam Chibi hilang nyatu sama web */
-        .chibi-elegant { width: 300px; mix-blend-mode: screen; filter: contrast(1.3) brightness(1.1) drop-shadow(0 0 40px rgba(212, 180, 131, 0.5)); margin-bottom: 40px; }
-        .rose-icon { color: var(--dark-gold); font-size: 2.5rem; margin: 30px 0; animation: pulseGlow 2.5s infinite; }
-        @keyframes pulseGlow { 0% { opacity: 0.5; text-shadow: 0 0 10px rgba(212, 180, 131, 0.2); } 100% { opacity: 1; text-shadow: 0 0 30px rgba(212, 180, 131, 0.7); } }
+        .chibi-elegant { width: 250px; mix-blend-mode: screen; filter: contrast(1.2) brightness(1.1) drop-shadow(0 0 30px rgba(212, 180, 131, 0.4)); animation: floatUpDown 4s ease-in-out infinite; margin-bottom: 30px; }
+        .rose-icon { color: var(--dark-gold); font-size: 2rem; margin: 20px 0; animation: pulseGlow 2s infinite; }
+        @keyframes floatUpDown { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
-        /* DETAILS (Dress Code & Venue) */
-        #details { padding: 120px 20px; background: var(--bg-dark); }
-        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; max-width: 1100px; margin: 0 auto; }
+        /* DETAILS */
+        #details { padding: 100px 20px; background: var(--bg-dark); }
+        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 1000px; margin: 0 auto; }
         @media (max-width: 768px) { .details-grid { grid-template-columns: 1fr; } }
-        .detail-card { text-align: center; position: relative; overflow: hidden; opacity: 0; transform: translateY(50px); }
-        .detail-card h3 { font-size: 2.2rem; color: var(--gold); margin-bottom: 25px; letter-spacing: 4px; text-transform: uppercase;}
-        .detail-card p { font-size: 1.1rem; color: var(--cream); line-height: 1.9; margin-bottom: 25px; font-weight: 300; }
-        .color-palette { display: flex; justify-content: center; gap: 20px; margin-top: 30px; }
-        .color-circle { width: 45px; height: 45px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 8px 20px rgba(0,0,0,0.6); position: relative; }
+        .detail-card { text-align: center; position: relative; overflow: hidden;}
+        .detail-card h3 { font-size: 2rem; color: var(--gold); margin-bottom: 20px; letter-spacing: 3px; text-transform: uppercase;}
+        .detail-card p { font-size: 1rem; color: var(--cream); line-height: 1.8; margin-bottom: 20px;}
+        .color-palette { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        .color-circle { width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .c-white { background: #FFFFFF; } .c-gold { background: #D4B483; } .c-cream { background: #F6EFE6; }
-        .map-container { width: 100%; height: 280px; border-radius: 15px; overflow: hidden; border: 2px solid rgba(212, 180, 131, 0.2); margin-bottom: 25px;}
-        
+        .map-container { width: 100%; height: 250px; border-radius: 10px; overflow: hidden; border: 1px solid rgba(212, 180, 131, 0.3); margin-bottom: 20px;}
+        .btn-gold { display: inline-block; padding: 12px 30px; background: var(--gold); color: #000; text-decoration: none; font-weight: 500; letter-spacing: 2px; border-radius: 30px; transition: all 0.3s ease; text-transform: uppercase; font-size: 0.8rem; cursor: pointer; border: none; }
+        .btn-gold:hover { background: var(--white); box-shadow: 0 0 20px rgba(212, 180, 131, 0.6); }
+
         /* RSVP SECTION - WhatsApp Integration */
-        #rsvp { padding: 150px 20px; position: relative; background: url('https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=2040&auto=format&fit=crop') center/cover fixed; }
-        #rsvp::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to top, rgba(5,5,5,1) 0%, rgba(5,5,5,0.85) 100%); }
-        .rsvp-form { max-width: 650px; margin: 0 auto; position: relative; z-index: 2; opacity: 0; transform: translateY(50px); }
-        .form-group { margin-bottom: 30px; text-align: left; }
-        .form-group label { display: block; margin-bottom: 10px; color: var(--gold); letter-spacing: 2px; font-size: 0.95rem; text-transform: uppercase; }
-        .form-control {
-            width: 100%; padding: 18px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(212, 180, 131, 0.2); color: var(--white);
-            border-radius: 8px; font-family: 'Montserrat', sans-serif; font-size: 1rem; transition: all 0.3s;
-        }
-        .form-control:focus { outline: none; border-color: var(--gold); background: rgba(255,255,255,0.08); box-shadow: 0 0 15px rgba(212, 180, 131, 0.2); }
+        #rsvp { padding: 120px 20px; position: relative; background: url('https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=2040&auto=format&fit=crop') center/cover fixed; }
+        #rsvp::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to top, rgba(5,5,5,1) 0%, rgba(5,5,5,0.8) 100%); }
+        .rsvp-form { max-width: 600px; margin: 0 auto; position: relative; z-index: 2; }
+        .form-group { margin-bottom: 25px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; color: var(--gold); letter-spacing: 1px; font-size: 0.9rem; }
+        .form-control { width: 100%; padding: 15px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(212, 180, 131, 0.3); color: var(--white); border-radius: 5px; font-family: 'Montserrat', sans-serif; transition: all 0.3s; }
+        .form-control:focus { outline: none; border-color: var(--gold); background: rgba(255,255,255,0.1); }
 
         /* CLOSING */
-        #closing { padding: 120px 20px; text-align: center; background: #000; position: relative; }
-        .closing-text { font-size: 3rem; color: var(--gold); font-style: italic; opacity: 0; transform: translateY(30px); }
-        .closing-subtext { color: var(--white); font-size: 1.8rem; margin-top: 25px; opacity: 0; transform: translateY(30px); }
-        .chibi-closing { width: 200px; mix-blend-mode: screen; margin-top: 40px; opacity: 0; filter: grayscale(20%) sepia(30%); }
+        #closing { padding: 100px 20px; text-align: center; background: #000; position: relative; }
+        .closing-text { font-size: 2.5rem; color: var(--gold); font-style: italic; opacity: 0.8; }
+        .chibi-closing { width: 180px; mix-blend-mode: screen; margin-top: 30px; opacity: 0.6; filter: grayscale(20%) sepia(30%); }
 
+        /* Particles container */
+        #particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+        .particle { position: absolute; background: var(--gold); border-radius: 50%; opacity: 0; box-shadow: 0 0 10px var(--gold); animation: floatUp 10s infinite linear; }
+        @keyframes floatUp { 0% { transform: translateY(100vh) scale(0); opacity: 0; } 20% { opacity: 0.8; } 80% { opacity: 0.5; } 100% { transform: translateY(-100vh) scale(1); opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <div id="particles-mouse"></div>
+    <div id="particles"></div>
 
     <div id="loader">
         <div class="loader-content">
-            <h2 class="loader-title serif" id="load-title">Golden Elegance</h2>
-            <button class="open-btn" onclick="openInvitation()" id="load-btn">Open Invitation</button>
+            <h2 class="loader-title serif">Golden Elegance</h2>
+            <button class="open-btn" onclick="openInvitation()">Open Invitation</button>
         </div>
     </div>
 
     <div id="main-content">
         
         <section id="hero">
-            <div class="hero-bg" id="hero-bg"></div>
+            <div class="hero-bg"></div>
             <div class="hero-overlay"></div>
-            <div class="hero-content">
-                <div class="hero-subtitle" id="h-sub">You are cordially invited</div>
-                <h1 class="hero-title" id="h-title">Chaca</h1>
-                <h2 class="serif" id="h-20" style="font-size: 2.5rem; color: var(--gold); font-style: italic;">is turning twenty</h2>
-                <div class="hero-date" id="h-date">30 . 05 . 2026</div>
+            <div class="hero-content reveal">
+                <div class="hero-subtitle">You are cordially invited</div>
+                <h1 class="hero-title">Chaca</h1>
+                <h2 class="serif" style="font-size: 2rem; color: var(--gold); font-style: italic;">is turning twenty</h2>
+                <div class="hero-date">30 . 05 . 2026</div>
             </div>
         </section>
 
         <section id="letter">
-            <div class="letter-container glass-panel">
+            <div class="letter-container glass-panel reveal">
                 <p class="letter-text">"Step into a night of glowing lights, flowing champagne, and timeless memories. I am thrilled to invite you to celebrate a beautiful milestone as I turn twenty. Let us create magic together."</p>
-                <div class="signaturecursive" style="font-family: 'Montserrat', sans-serif; letter-spacing: 5px; font-weight: 300;">With love, Maisha Rayya</div>
+                <div class="signature cursive">With love, Maisha Rayya</div>
             </div>
         </section>
 
-        <section id="countdown-section">
-            <h3 class="serif" style="font-size: 3rem; color: var(--cream); margin-bottom: 50px; text-transform: uppercase; letter-spacing: 8px;">The Magic Begins In</h3>
+        <section id="countdown-section" class="reveal">
+            <h3 class="serif" style="font-size: 2.5rem; color: var(--cream); margin-bottom: 40px; text-transform: uppercase; letter-spacing: 5px;">The Magic Begins In</h3>
             <div class="countdown-wrapper">
                 <div class="time-box"><span class="time-num" id="days">00</span><span class="time-label">Days</span></div>
                 <div class="time-box"><span class="time-num" id="hours">00</span><span class="time-label">Hours</span></div>
@@ -204,21 +181,21 @@
             </div>
         </section>
 
-        <section id="magic-wishes">
+        <section id="magic-wishes" class="reveal">
             <div class="magic-container">
-                <img src="WhatsApp_Image_2026-05-19_at_18.13.10-removebg-preview.jpg" alt="Chaca Magic" class="chibi-elegant">
+                <img src="WhatsApp_Image_2026-05-19_at_18.13.10-removebg-preview.jpg" alt="Chaca Magic" class="chibi-elegant" onerror="this.style.display='none'">
                 <div class="rose-icon">✦</div>
-                <h3 class="serif" style="font-size: 3rem; color: var(--gold); margin-bottom: 30px;">A Tale as Old as Time</h3>
-                <p style="color: var(--beige); max-width: 650px; margin: 0 auto; line-height: 2; font-weight: 300;">Prepare for an evening woven with elegance, a touch of enchantment, and hearts full of joy. Your presence is the truest gift.</p>
+                <h3 class="serif" style="font-size: 2.5rem; color: var(--gold); margin-bottom: 20px;">A Tale as Old as Time</h3>
+                <p style="color: var(--beige); max-width: 600px; margin: 0 auto; line-height: 1.8;">Prepare for an evening woven with elegance, a touch of enchantment, and hearts full of joy. Your presence is the truest gift.</p>
             </div>
         </section>
 
         <section id="details">
             <div class="details-grid">
-                <div class="detail-card glass-panel">
+                <div class="detail-card glass-panel reveal">
                     <h3>Dress Code</h3>
                     <p>Embrace the elegance of the night. Please grace the evening in your most stunning attire following our thematic palette.</p>
-                    <p class="serif" style="font-size: 1.5rem; color: var(--gold); font-style: italic;">White • Gold • Cream</p>
+                    <p class="serif" style="font-size: 1.2rem; color: var(--gold); font-style: italic;">White • Gold • Cream</p>
                     <div class="color-palette">
                         <div class="color-circle c-white"></div>
                         <div class="color-circle c-gold"></div>
@@ -226,22 +203,22 @@
                     </div>
                 </div>
 
-                <div class="detail-card glass-panel">
+                <div class="detail-card glass-panel reveal">
                     <h3>The Venue</h3>
                     <p><strong>Marabunta Resto & Bar</strong><br>Saturday, May 30th, 2026<br>20:00 PM onwards</p>
-                    <p style="font-size: 0.9rem; color: #aaa; margin-bottom: 25px;">Jl. Cendrawasih No.23, Tj. Mas, Kec. Semarang Utara</p>
+                    <p style="font-size: 0.85rem; color: #aaa; margin-bottom: 20px;">Jl. Cendrawasih No.23, Tj. Mas, Kec. Semarang Utara</p>
                     <div class="map-container">
-                        <iframe src="http://googleusercontent.com/maps.google.com/4" width="100%" height="100%" style="border:0; filter: grayscale(90%) sepia(30%);" allowfullscreen="" loading="lazy"></iframe>
+                        <iframe src="https://maps.google.com/maps?q=-6.9634,110.4285&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style="border:0; filter: grayscale(80%) sepia(30%);" allowfullscreen="" loading="lazy"></iframe>
                     </div>
-                    <a href="https://maps.app.goo.gl/orTCXzUgUdCuvnaN9" target="_blank" class="btn-gold">Open Google Maps</a>
+                    <a href="https://maps.google.com/?q=-6.9634,110.4285" target="_blank" class="btn-gold">Open Google Maps</a>
                 </div>
             </div>
         </section>
 
         <section id="rsvp">
-            <div class="rsvp-form glass-panel">
-                <h3 class="serif" style="font-size: 3.5rem; color: var(--gold); text-align: center; margin-bottom: 15px;">R.S.V.P</h3>
-                <p style="text-align: center; color: var(--cream); margin-bottom: 50px;">Kindly respond to secure your place under the golden lights.</p>
+            <div class="rsvp-form glass-panel reveal">
+                <h3 class="serif" style="font-size: 3rem; color: var(--gold); text-align: center; margin-bottom: 10px;">R.S.V.P</h3>
+                <p style="text-align: center; color: var(--cream); margin-bottom: 40px;">Kindly respond to secure your place under the golden lights.</p>
                 
                 <form id="rsvp-wa" onsubmit="sendToWA(event)">
                     <div class="form-group">
@@ -264,166 +241,106 @@
                     </div>
                     <div class="form-group">
                         <label>Your Warmest Wishes for Chaca</label>
-                        <textarea id="wa-msg" class="form-control" rows="5" required placeholder="Leave a sweet message..."></textarea>
+                        <textarea id="wa-msg" class="form-control" rows="4" required placeholder="Leave a sweet message..."></textarea>
                     </div>
-                    <button type="submit" class="btn-gold" style="width: 100%; border:none; margin-top: 15px; font-size: 1.1rem; letter-spacing: 5px;">Send RSVP via WhatsApp</button>
+                    <button type="submit" class="btn-gold" style="width: 100%; border:none; margin-top: 10px; font-size: 1rem;">Send RSVP via WhatsApp</button>
                 </form>
             </div>
         </section>
 
         <section id="closing">
-            <h2 class="closing-text serif" id="c-text">And so the night begins...</h2>
-            <p class="serif closing-subtext" id="c-subtext">See you under the golden lights.</p>
+            <h2 class="closing-text reveal">And so the night begins...</h2>
+            <p class="serif reveal" style="color: var(--white); font-size: 1.5rem; margin-top: 20px;">See you under the golden lights.</p>
             
-            <div>
-                <img src="WhatsApp_Image_2026-05-19_at_18.13.1111-removebg-preview.jpg" class="chibi-closing" id="c-chibi">
+            <div class="reveal">
+                <img src="WhatsApp_Image_2026-05-19_at_18.13.1111-removebg-preview.jpg" class="chibi-closing" onerror="this.style.display='none'">
             </div>
             
-            <div style="margin-top: 60px; display: flex; justify-content: center; gap: 25px;">
-                <a href="https://www.instagram.com/maisharayya/" target="_blank" style="color: var(--gold); text-decoration: none; font-size: 1rem; letter-spacing: 3px;">@MAISHARAYYA</a>
+            <div style="margin-top: 50px; display: flex; justify-content: center; gap: 20px;" class="reveal">
+                <a href="https://www.instagram.com/maisharayya/" target="_blank" style="color: var(--gold); text-decoration: none; font-size: 0.9rem; letter-spacing: 2px;">@MAISHARAYYA</a>
                 <span style="color: var(--gold);">|</span>
-                <a href="https://wa.me/62816593297" target="_blank" style="color: var(--gold); text-decoration: none; font-size: 1rem; letter-spacing: 3px;">+62 816-593-297</a>
+                <a href="https://wa.me/62816593297" target="_blank" style="color: var(--gold); text-decoration: none; font-size: 0.9rem; letter-spacing: 2px;">+62 816-593-297</a>
             </div>
         </section>
 
     </div>
 
     <script>
-        // Start GSAP
-        gsap.registerPlugin(ScrollTrigger);
-
-        // Pre-loader split text effect
-        const loadTitle = new SplitType('#load-title', { types: 'chars' });
-        
-        // --- LOADING SCREEN ANIMATION ---
-        let loadTL = gsap.timeline();
-        loadTL.from(loadTitle.chars, {
-            opacity: 0, y: 30, stagger: 0.05, duration: 1.5, ease: "power3.out"
-        }).from('#load-btn', {
-            opacity: 0, scale: 0.8, duration: 1, ease: "back.out(1.7)"
-        }, "-=1");
-
-        // --- OPEN INVITATION ---
+        // Open Invitation
         function openInvitation() {
-            document.body.classList.add('loaded'); // Turn on body opacity
-            
-            // Fade out loader
-            gsap.to('#loader', {
-                opacity: 0, y: -100, duration: 1.5, ease: "power4.inOut", onComplete: () => {
-                    document.getElementById('loader').style.visibility = 'hidden';
-                    startMainAnimations(); // Trigger main content animations
-                }
-            });
-            
-            // Bring main content into view
-            gsap.to('#main-content', {
-                visibility: 'visible', opacity: 1, duration: 1
-            });
-
-            createParticles(); // Start particle dust
+            document.getElementById('loader').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('loader').style.visibility = 'hidden';
+                document.getElementById('main-content').style.opacity = '1';
+                document.getElementById('main-content').style.visibility = 'visible';
+                window.scrollTo(0,0);
+            }, 1000);
+            createParticles();
         }
 
-        // --- MAIN CONTENT ANIMATIONS ---
-        function startMainAnimations() {
-            // Hero section - staggered fade in
-            gsap.to(['#h-sub', '#h-title', '#h-20', '#h-date'], {
-                opacity: 1, y: 0, duration: 1.5, stagger: 0.3, ease: "power3.out", delay: 0.2
-            });
-
-            // Hero background parallax
-            gsap.to('#hero-bg', {
-                yPercent: 30, scrollTrigger: {
-                    trigger: "#hero", start: "top top", end: "bottom top", scrub: 1
-                }
-            });
-
-            // --- ALL SECTION REVEALS ---
-            
-            // Letter Section
-            gsap.to('.letter-container', {
-                opacity: 1, y: 0, duration: 1.2, ease: "power2.out",
-                scrollTrigger: { trigger: "#letter", start: "top 70%" }
-            });
-
-            // Countdown
-            gsap.to('.countdown-wrapper', {
-                opacity: 1, y: 0, duration: 1.2, ease: "power2.out",
-                scrollTrigger: { trigger: "#countdown-section", start: "top 70%" }
-            });
-
-            // Chibi / Magic wishes
-            gsap.to('.magic-container', {
-                opacity: 1, y: 0, duration: 1.2, ease: "power2.out",
-                scrollTrigger: { trigger: "#magic-wishes", start: "top 70%" }
-            });
-
-            // Chibi float animation (loop)
-            gsap.to('.chibi-elegant', {
-                y: -20, duration: 3, ease: "sine.inOut", yoyo: true, repeat: -1
-            });
-
-            // Details Cards
-            gsap.to('.detail-card', {
-                opacity: 1, y: 0, duration: 1.2, stagger: 0.3, ease: "power2.out",
-                scrollTrigger: { trigger: "#details", start: "top 70%" }
-            });
-
-            // RSVP Form
-            gsap.to('.rsvp-form', {
-                opacity: 1, y: 0, duration: 1.2, ease: "power2.out",
-                scrollTrigger: { trigger: "#rsvp", start: "top 70%" }
-            });
-
-            // Closing section
-            gsap.to('#c-text', { opacity: 1, y: 0, duration: 1, ease: "power2.out", scrollTrigger: { trigger: "#closing", start: "top 70%" } });
-            gsap.to('#c-subtext', { opacity: 1, y: 0, duration: 1, delay: 0.3, ease: "power2.out", scrollTrigger: { trigger: "#closing", start: "top 70%" } });
-            gsap.to('#c-chibi', { opacity: 1, duration: 1.5, delay: 0.6, scrollTrigger: { trigger: "#closing", start: "top 70%" } });
-        }
-
-        // --- NON-ANIMATION LOGIC (Timer, WA, Particles) ---
-
-        // 1. Countdown Timer
+        // Countdown Timer
         const countdownDate = new Date("May 30, 2026 20:00:00").getTime();
-        setInterval(function() {
+        const timer = setInterval(function() {
             const now = new Date().getTime();
             const distance = countdownDate - now;
-            if (distance < 0) return;
+
+            if (distance < 0) {
+                clearInterval(timer);
+                document.getElementById("days").innerHTML = "00";
+                document.getElementById("hours").innerHTML = "00";
+                document.getElementById("minutes").innerHTML = "00";
+                document.getElementById("seconds").innerHTML = "00";
+                return;
+            }
+
             document.getElementById("days").innerText = String(Math.floor(distance / (1000 * 60 * 60 * 24))).padStart(2, '0');
             document.getElementById("hours").innerText = String(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
             document.getElementById("minutes").innerText = String(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
             document.getElementById("seconds").innerText = String(Math.floor((distance % (1000 * 60)) / 1000)).padStart(2, '0');
         }, 1000);
 
-        // 2. WhatsApp RSVP
+        // WhatsApp Direct Message Logic
         function sendToWA(e) {
             e.preventDefault();
-            let textWA = `✨ *RSVP Chaca's 20th Birthday* ✨%0A%0A*Name:* ${document.getElementById('wa-name').value}%0A*Attendance:* ${document.getElementById('wa-attend').value}%0A*Guests:* ${document.getElementById('wa-guests').value}%0A*Wishes:* ${document.getElementById('wa-msg').value}%0A%0A_See you under the golden lights!_`;
-            window.open(`https://wa.me/62816593297?text=${textWA}`, '_blank');
+            let name = document.getElementById('wa-name').value;
+            let attend = document.getElementById('wa-attend').value;
+            let guests = document.getElementById('wa-guests').value;
+            let msg = document.getElementById('wa-msg').value;
+
+            // Format pesannya
+            let textWA = `✨ *RSVP Chaca's 20th Birthday* ✨%0A%0A*Name:* ${name}%0A*Attendance:* ${attend}%0A*Guests:* ${guests}%0A*Wishes:* ${msg}%0A%0A_See you under the golden lights!_`;
+            
+            // Nomer WA Maisha
+            let waLink = `https://wa.me/62816593297?text=${textWA}`;
+            
+            // Buka tab WA
+            window.open(waLink, '_blank');
         }
 
-        // 3. Floating Gold Dust (Mouse move)
+        // Scroll Reveal
+        const reveals = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add('active');
+                observer.unobserve(entry.target);
+            });
+        }, { threshold: 0.15, rootMargin: "0px 0px -50px 0px" });
+
+        reveals.forEach(reveal => revealObserver.observe(reveal));
+
+        // Particles
         function createParticles() {
-            const container = document.getElementById('particles-mouse');
-            for (let i = 0; i < 40; i++) {
-                let p = document.createElement('div');
-                p.classList.add('p-dot');
-                p.style.width = p.style.height = (Math.random() * 5 + 1) + 'px';
-                container.appendChild(p);
+            const particleContainer = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                let particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.width = particle.style.height = (Math.random() * 4 + 1) + 'px';
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particleContainer.appendChild(particle);
             }
-
-            const dots = document.querySelectorAll('.p-dot');
-            dots.forEach(dot => {
-                gsap.set(dot, { x: gsap.utils.random(0, window.innerWidth), y: gsap.utils.random(0, window.innerHeight), opacity: gsap.utils.random(0.1, 0.6) });
-            });
-
-            document.addEventListener('mousemove', e => {
-                dots.forEach(dot => {
-                    let depth = dot.style.width.replace('px', '');
-                    let moveX = (e.clientX - window.innerWidth / 2) * (depth / 100);
-                    let moveY = (e.clientY - window.innerHeight / 2) * (depth / 100);
-                    gsap.to(dot, { x: `+=${moveX * 0.1}`, y: `+=${moveY * 0.1}`, ease: "power1.out", duration: 1.5 });
-                });
-            });
         }
     </script>
 </body>
